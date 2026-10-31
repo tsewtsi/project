@@ -29,7 +29,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
-      - run: pip install aider-chat requests pytest
+      - run: pip install -q aider-chat requests pytest
       - id: meta
         run: |
           echo "branch=agent/${{ github.event.issue.number || github.run_id }}" >> $GITHUB_OUTPUT
@@ -47,6 +47,7 @@ jobs:
           OPENAI_API_BASE: https://api.deepseek.com/v1
           PLAN: ${{ steps.meta.outputs.plan }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python .agent/orchestrator.py
       - run: git push -u origin "${{ steps.meta.outputs.branch }}" --force
 
