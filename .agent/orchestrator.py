@@ -57,8 +57,10 @@ for i in range(1, MAX_ITER + 1):
     task = PLAN if not feedback else f"{PLAN}\n\n=== ПРАВКИ ОТ РЕВЬЮЕРА (итерация {i}) ===\n{feedback}"
     print(f"===== ITER {i}: запуск aider =====")
     sh(f'aider --model openai/deepseek-chat --yes-always --no-check-update '
-       f'--no-show-model-warnings --map-tokens 1024 --read .agent/executor.md '
+       f'--no-show-model-warnings --no-gitignore --no-auto-commits '
+       f'--map-tokens 1024 --read .agent/executor.md '
        f'--message {json.dumps(task)}', stream=True)
+    sh("git rm -r --cached --ignore-unmatch __pycache__ tests/__pycache__ .pytest_cache")
     sh("git add -A && git commit -m 'agent: iteration %d' || true" % i)
 
     diff = sh(f"git diff {BASE}...HEAD").stdout
